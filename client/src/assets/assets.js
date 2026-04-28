@@ -195,6 +195,14 @@ const dummyCastsData = [
     profile_path:
       "https://image.tmdb.org/t/p/original/nTSPtzWu6deZTJtWXHUpACVznY4.jpg",
   },
+  {
+    name: "Will Smith",
+    profile_path: "https://image.tmdb.org/t/p/original/8YzM6d4qG5W8YpX6jzAm8h1Hn0Z.jpg",
+  },
+  {
+    name: "Tommy Lee Jones",
+    profile_path: "https://image.tmdb.org/t/p/original/6Yh0kH6dFhM4m8P7p5YVw3gFQ7A.jpg",
+  },
 ];
 
 export const dummyShowsData = [
@@ -359,6 +367,30 @@ export const dummyShowsData = [
     vote_count: 23569,
     runtime: 127,
   },
+  {
+  _id: "mib001",
+  id: 607, // TMDB id
+  title: "Men in Black",
+  overview:
+    "A police officer joins a secret organization that monitors and polices alien interactions on Earth.",
+  poster_path:
+  "https://m.media-amazon.com/images/M/MV5BNzQzOTk3NjAtNDI0ZS00ZjQ3LWExNzktYzY0YzNjZTU0ZDIxXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg",
+
+backdrop_path:
+  "https://wallpapercave.com/wp/wp1817973.jpg",
+  genres: [
+    { id: 28, name: "Action" },
+    { id: 35, name: "Comedy" },
+    { id: 878, name: "Science Fiction" },
+  ],
+  casts: dummyCastsData,
+  release_date: "1997-07-02",
+  original_language: "en",
+  tagline: "Protecting the Earth from the scum of the universe.",
+  vote_average: 7.3,
+  vote_count: 150000,
+  runtime: 98,
+},
 ];
 
 export const dummyDateTimeData = {
