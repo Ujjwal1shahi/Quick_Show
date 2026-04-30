@@ -111,7 +111,7 @@ const MovieDetails = () => {
       </div>
     </div>
   ) : (
-    <div>Loading...
+    <div>
       <Loading/>
     </div>
   );
