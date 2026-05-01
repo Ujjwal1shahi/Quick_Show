@@ -1,0 +1,749 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600&family=Barlow:wght@300;400;500;600&display=swap");
+
+.cinema-hero,
+.cinema-hero * {
+  box-sizing: border-box;
+}
+
+.cinema-hero {
+  --ruby: #e0152b;
+  --pink: #f84565;
+  --ruby-soft: rgba(248, 69, 101, 0.55);
+  --dark: #09090b;
+  --move-x: 0px;
+  --move-y: 0px;
+
+  position: relative;
+  height: 100svh;
+  min-height: 760px;
+  max-height: 980px;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(248, 69, 101, 0.14), transparent 30%),
+    radial-gradient(circle at 80% 60%, rgba(80, 120, 255, 0.14), transparent 32%),
+    #09090b;
+  font-family: "Barlow", sans-serif;
+  isolation: isolate;
+}
+
+.cinema-starfield,
+.cinema-nebula,
+.cinema-scanlines,
+.cinema-backdrop,
+.cinema-vertical-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cinema-starfield {
+  z-index: 0;
+}
+
+.cinema-nebula {
+  z-index: 1;
+  transform: translate(var(--move-x), var(--move-y));
+  transition: transform 0.2s ease-out;
+}
+
+.cinema-nebula::before,
+.cinema-nebula::after {
+  content: "";
+  position: absolute;
+  width: 58vw;
+  height: 58vw;
+  border-radius: 999px;
+  filter: blur(10px);
+}
+
+.cinema-nebula::before {
+  top: -25%;
+  left: -12%;
+  background: radial-gradient(circle, rgba(248, 69, 101, 0.35), transparent 68%);
+  animation: cinema-drift-one 16s ease-in-out infinite alternate;
+}
+
+.cinema-nebula::after {
+  right: -12%;
+  bottom: -22%;
+  background: radial-gradient(circle, rgba(61, 97, 255, 0.25), transparent 68%);
+  animation: cinema-drift-two 20s ease-in-out infinite alternate;
+}
+
+.cinema-scanlines {
+  z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.025) 2px,
+    rgba(255, 255, 255, 0.025) 4px
+  );
+}
+
+.cinema-vertical-line {
+  z-index: 4;
+  left: 5.5rem;
+  right: auto;
+  width: 2px;
+  background: linear-gradient(transparent, var(--pink), transparent);
+  opacity: 0.9;
+}
+
+.cinema-backdrop {
+  z-index: 1;
+  left: auto;
+  width: min(58vw, 900px);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.72;
+  transform: scale(1.03);
+  transition: background-image 0.5s ease;
+  mask-image: linear-gradient(to right, transparent 0%, black 35%, black 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%, black 100%);
+}
+
+.cinema-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, #09090b 0%, rgba(9, 9, 11, 0.55) 32%, rgba(9, 9, 11, 0.2) 100%),
+    linear-gradient(to top, #09090b 0%, transparent 45%);
+}
+
+/* Main Content */
+.cinema-content {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  min-height: 0;
+  max-width: 720px;
+  padding: 7.5rem 1.5rem 7.4rem 8.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cinema-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  margin-bottom: 20px;
+  animation: cinema-slide-right 0.7s ease forwards;
+}
+
+.cinema-badge span {
+  background: linear-gradient(135deg, var(--ruby), var(--pink));
+  padding: 5px 12px 3px;
+  font-family: "Bebas Neue", sans-serif;
+  letter-spacing: 2px;
+  font-size: 20px;
+  clip-path: polygon(0 0, 95% 0, 100% 50%, 95% 100%, 0 100%);
+  box-shadow: 0 0 35px var(--ruby-soft);
+}
+
+.cinema-badge p {
+  margin: 0;
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 12px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Movie Title */
+.cinema-title {
+  margin: 0 0 22px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(3.4rem, 6.2vw, 6.4rem);
+  line-height: 0.92;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: cinema-slide-up 0.8s 0.1s ease both;
+
+  width: min(100%, 760px);
+  min-height: clamp(9.2rem, 18vw, 16.8rem);
+  max-height: clamp(9.2rem, 18vw, 16.8rem);
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cinema-title span,
+.cinema-title em {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cinema-title em {
+  font-style: normal;
+  color: var(--pink);
+  text-shadow: 0 0 55px var(--ruby-soft);
+}
+
+/* Meta */
+.cinema-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  animation: cinema-slide-up 0.8s 0.2s ease both;
+}
+
+.cinema-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  font-size: 14px;
+}
+
+/* Rating */
+.cinema-rating {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  animation: cinema-slide-up 0.8s 0.3s ease both;
+}
+
+.cinema-rating strong {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: var(--pink);
+}
+
+.cinema-stars {
+  display: flex;
+  gap: 2px;
+  color: rgba(255, 255, 255, 0.18);
+}
+
+.cinema-stars .active {
+  color: #f5c518;
+}
+
+.cinema-rating p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Description */
+.cinema-description {
+  max-width: 560px;
+  min-height: 78px;
+  max-height: 78px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.75;
+  font-size: 15px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  animation: cinema-slide-up 0.8s 0.4s ease both;
+}
+
+/* Buttons - all 3 in one horizontal row */
+.cinema-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 32px;
+  margin-bottom: 34px;
+  animation: cinema-slide-up 0.8s 0.5s ease both;
+}
+
+.cinema-primary-btn,
+.cinema-secondary-btn,
+.cinema-link-btn {
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.cinema-primary-btn {
+  color: white;
+  background: linear-gradient(135deg, var(--ruby), var(--pink));
+  box-shadow: 0 16px 40px rgba(248, 69, 101, 0.25);
+}
+
+.cinema-secondary-btn {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.cinema-secondary-btn span {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(248, 69, 101, 0.2);
+  color: var(--pink);
+}
+
+.cinema-link-btn {
+  color: rgba(255, 255, 255, 0.78);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cinema-primary-btn:hover,
+.cinema-secondary-btn:hover,
+.cinema-link-btn:hover {
+  transform: translateY(-2px);
+}
+
+.cinema-primary-btn:hover {
+  box-shadow: 0 20px 55px rgba(248, 69, 101, 0.38);
+}
+
+.cinema-link-btn:hover {
+  color: #fff;
+  border-color: rgba(248, 69, 101, 0.45);
+  background: rgba(248, 69, 101, 0.08);
+}
+
+/* Side Dots */
+.cinema-side-dots {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cinema-side-dots button {
+  width: 7px;
+  height: 7px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.28);
+  transition: all 0.25s ease;
+}
+
+.cinema-side-dots button.active {
+  height: 28px;
+  background: var(--pink);
+  box-shadow: 0 0 18px var(--ruby-soft);
+}
+
+/* Poster Card */
+.cinema-poster-card {
+  position: absolute;
+  z-index: 6;
+  right: 7vw;
+  bottom: 7.4rem;
+  width: 260px;
+  padding: 12px;
+  border-radius: 28px;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+  animation: cinema-float-card 5s ease-in-out infinite;
+}
+
+.cinema-poster-card img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.cinema-poster-card p {
+  margin: 14px 8px 4px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--pink);
+}
+
+.cinema-poster-card h3 {
+  margin: 0 8px 6px;
+  min-height: 44px;
+  max-height: 44px;
+  line-height: 1.2;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.cinema-poster-card span {
+  display: block;
+  margin: 0 8px 4px;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 12px;
+}
+
+/* Progress */
+.cinema-progress {
+  position: absolute;
+  z-index: 6;
+  left: 8.5rem;
+  bottom: 3.7rem;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.cinema-progress span {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.cinema-progress div {
+  position: relative;
+  width: 130px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cinema-progress i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--ruby), var(--pink));
+  transition: width 0.4s ease;
+}
+
+/* Ticker */
+.cinema-ticker {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 10px 0;
+  background: rgba(9, 9, 11, 0.78);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.cinema-ticker div {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  animation: cinema-ticker 32s linear infinite;
+}
+
+.cinema-ticker span {
+  padding: 0 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.cinema-ticker .accent {
+  color: var(--pink);
+}
+
+/* Animations */
+@keyframes cinema-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cinema-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes cinema-drift-one {
+  to {
+    transform: translate(4%, 3%) scale(1.08);
+  }
+}
+
+@keyframes cinema-drift-two {
+  to {
+    transform: translate(-3%, -4%) scale(1.1);
+  }
+}
+
+@keyframes cinema-ticker {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes cinema-float-card {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* Laptop / Small Desktop */
+@media (max-width: 1100px) {
+  .cinema-content {
+    max-width: 650px;
+    padding-left: 5.8rem;
+  }
+
+  .cinema-title {
+    font-size: clamp(3.2rem, 6vw, 5.8rem);
+    min-height: clamp(8.6rem, 17vw, 15.2rem);
+    max-height: clamp(8.6rem, 17vw, 15.2rem);
+  }
+
+  .cinema-actions {
+    gap: 11px;
+    margin-bottom: 36px;
+  }
+
+  .cinema-primary-btn,
+  .cinema-secondary-btn,
+  .cinema-link-btn {
+    padding: 0 17px;
+    font-size: 14px;
+  }
+
+  .cinema-poster-card {
+    right: 2rem;
+    width: 220px;
+    opacity: 0.88;
+  }
+
+  .cinema-backdrop {
+    width: 70vw;
+  }
+
+  .cinema-progress {
+    left: 5.8rem;
+  }
+}
+
+/* Tablet */
+@media (max-width: 850px) {
+  .cinema-hero {
+    height: auto;
+    min-height: 760px;
+    max-height: none;
+  }
+
+  .cinema-vertical-line,
+  .cinema-poster-card,
+  .cinema-side-dots {
+    display: none;
+  }
+
+  .cinema-backdrop {
+    width: 100%;
+    opacity: 0.38;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .cinema-content {
+    height: auto;
+    min-height: 760px;
+    max-width: 100%;
+    padding: 7rem 1.25rem 7rem;
+  }
+
+  .cinema-title {
+    font-size: clamp(3rem, 13vw, 4.9rem);
+    line-height: 0.95;
+    width: 100%;
+    min-height: clamp(8.8rem, 38vw, 13.8rem);
+    max-height: clamp(8.8rem, 38vw, 13.8rem);
+  }
+
+  .cinema-actions {
+    gap: 10px;
+    margin-bottom: 40px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .cinema-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cinema-primary-btn,
+  .cinema-secondary-btn,
+  .cinema-link-btn {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .cinema-progress {
+    left: 1.25rem;
+    bottom: 3.6rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .cinema-hero {
+    min-height: 720px;
+  }
+
+  .cinema-content {
+    min-height: 720px;
+    padding-top: 6.5rem;
+    padding-bottom: 6.5rem;
+  }
+
+  .cinema-badge {
+    margin-bottom: 16px;
+  }
+
+  .cinema-badge span {
+    font-size: 17px;
+  }
+
+  .cinema-badge p {
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+
+  .cinema-title {
+    font-size: clamp(2.55rem, 12vw, 3.8rem);
+    line-height: 0.98;
+    min-height: clamp(7.8rem, 34vw, 11.2rem);
+    max-height: clamp(7.8rem, 34vw, 11.2rem);
+    margin-bottom: 18px;
+  }
+
+  .cinema-meta {
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .cinema-meta span {
+    font-size: 12px;
+    padding: 7px 10px;
+  }
+
+  .cinema-rating strong {
+    font-size: 2.4rem;
+  }
+
+  .cinema-description {
+    font-size: 14px;
+    line-height: 1.65;
+    min-height: 70px;
+    max-height: 70px;
+  }
+
+  .cinema-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-bottom: 44px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .cinema-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cinema-primary-btn,
+  .cinema-secondary-btn,
+  .cinema-link-btn {
+    width: auto;
+    min-height: 42px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .cinema-secondary-btn span {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cinema-progress {
+    gap: 10px;
+  }
+
+  .cinema-progress div {
+    width: 90px;
+  }
+
+  .cinema-ticker span {
+    padding: 0 20px;
+    font-size: 11px;
+  }
+}
