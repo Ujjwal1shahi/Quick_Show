@@ -121,7 +121,7 @@ const Dashboard = () => {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
                 <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-sm text-white backdrop-blur-md">
                   <StarIcon className="h-4 w-4 fill-primary text-primary" />

@@ -12,16 +12,16 @@ const MovieCard = ({ movie }) => {
   };
 
   return (
-    <article className="group relative w-66 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.055] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/45 hover:bg-white/[0.08]">
+    <article className="group relative w-66 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5.5 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/45 hover:bg-white/8">
       <button onClick={openMovie} className="block w-full overflow-hidden rounded-2xl">
         <img
           src={movie.backdrop_path}
           alt={movie.title}
-          className="h-52 w-full object-cover object-right-bottom transition duration-500 group-hover:scale-105"
+          className="h-52 w-full object-cover object-bottom-right transition duration-500 group-hover:scale-105"
         />
       </button>
 
-      <div className="pointer-events-none absolute inset-x-3 top-3 h-52 rounded-2xl bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute inset-x-3 top-3 h-52 rounded-2xl bg-linear-to-t from-black/70 via-transparent to-transparent" />
 
       <div className="relative pt-4">
         <p className="truncate text-base font-semibold text-white">{movie.title}</p>
@@ -38,7 +38,7 @@ const MovieCard = ({ movie }) => {
         <div className="mt-5 flex items-center justify-between pb-2">
           <button
             onClick={openMovie}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-primary to-rose-500 px-4 py-2 text-xs font-medium text-white shadow-[0_10px_28px_rgba(248,69,101,0.22)] transition hover:scale-[1.03]"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-linear-to-r from-primary to-rose-500 px-4 py-2 text-xs font-medium text-white shadow-[0_10px_28px_rgba(248,69,101,0.22)] transition hover:scale-[1.03]"
           >
             <Ticket className="h-3.5 w-3.5" />
             Buy Tickets

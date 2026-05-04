@@ -35,7 +35,7 @@ const ListBookings = () => {
 
         <div className="overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 shadow-lg shadow-black/20 backdrop-blur-md">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+            <table className="w-full min-w-225 border-collapse text-left text-sm">
               <thead>
                 <tr className="border-b border-primary/20 bg-primary/20 text-white">
                   <th className="px-5 py-4 font-medium">User Name</th>
