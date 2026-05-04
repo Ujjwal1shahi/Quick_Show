@@ -193,10 +193,10 @@ const HeroSection = () => {
       </div>
 
       <div className="cinema-content">
-        <div className="cinema-badge">
+        {/* <div className="cinema-badge">
           <span>Cinema</span>
           <p>Featured Release</p>
-        </div>
+        </div> */}
 
         <h1 className="cinema-title">
           <span>{movieData.titleParts.first}</span>
