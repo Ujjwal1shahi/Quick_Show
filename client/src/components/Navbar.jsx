@@ -30,15 +30,19 @@ const Navbar = () => {
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/35 px-5 shadow-lg shadow-black/20 backdrop-blur-xl md:px-8">
         {/* Logo */}
         <Link to="/" onClick={closeMenu} className="flex items-center">
-          <img
+          {/* <img
             src={assets.logo}
             alt="logo"
             className="h-auto w-32 object-contain md:w-36"
-          />
+          /> */}
+          <div className="cinema-badge">
+            <span>Cinema</span>
+            <p>Featured Release</p>
+          </div>
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-2 md:flex">
+        <div className="hidden items-center gap-2 px-2 py-2 md:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}

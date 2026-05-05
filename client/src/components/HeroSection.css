@@ -131,7 +131,7 @@
   align-items: center;
   gap: 12px;
   width: fit-content;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   animation: cinema-slide-right 0.7s ease forwards;
 }
 

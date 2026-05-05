@@ -79,7 +79,7 @@ const Footer = () => {
         <div className="grid gap-12 lg:grid-cols-6">
           <div className="lg:col-span-3">
             <Link to="/" className="group inline-flex items-center gap-3">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-primary via-pink-500 to-red-500 shadow-[0_0_24px_rgba(255,0,100,0.45)] transition-transform duration-300 group-hover:scale-105">
+              {/* <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-primary via-pink-500 to-red-500 shadow-[0_0_24px_rgba(255,0,100,0.45)] transition-transform duration-300 group-hover:scale-105">
                 <div className="absolute inset-0.5 rounded-2xl bg-black/70 backdrop-blur-sm" />
 
                 <svg
@@ -97,6 +97,10 @@ const Footer = () => {
                 <span className="mt-1 text-[10px] uppercase tracking-[0.35em] text-gray-400">
                   Movie Booking
                 </span>
+              </div> */}
+              <div className="cinema-badge">
+                <span>Cinema</span>
+                <p>Featured Release</p>
               </div>
             </Link>
 
