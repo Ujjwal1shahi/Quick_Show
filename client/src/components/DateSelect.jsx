@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import BlurCircle from "./BlurCircle";
-import { ChevronLeftIcon, ChevronRightIcon, CalendarDaysIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CalendarDaysIcon,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -20,44 +24,49 @@ const DateSelect = ({ dateTime, id }) => {
   };
 
   return (
-    <div id="dateSelect" className="relative px-6 md:px-16 lg:px-24 xl:px-44 pt-24 pb-16 overflow-hidden">
+    <div
+      id="dateSelect"
+      className="relative overflow-hidden px-6 pt-24 pb-16 md:px-12 lg:px-16 xl:px-24"
+    >
       <BlurCircle top="100px" left="110px" />
       <BlurCircle bottom="90px" right="110px" />
 
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-[0_0_45px_rgba(255,0,90,0.12)]">
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_0_45px_rgba(255,0,90,0.12)] backdrop-blur-xl">
         {/* Gradient glow layer */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-pink-500/10 pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-pink-500/10" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 p-6 md:p-10 lg:p-12">
+        <div className="relative z-10 flex flex-col items-center justify-between gap-10 p-6 md:p-10 lg:flex-row lg:p-12">
           {/* Left content */}
           <div className="w-full flex-1">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex items-center justify-center w-11 h-11 rounded-full bg-primary/15 border border-primary/30">
-                <CalendarDaysIcon className="w-5 h-5 text-primary" />
+            <div className="mb-3 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 bg-primary/15">
+                <CalendarDaysIcon className="h-5 w-5 text-primary" />
               </div>
 
               <div>
-                <p className="text-sm text-gray-400">Select your preferred show date</p>
-                <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                <p className="text-sm text-gray-400">
+                  Select your preferred show date
+                </p>
+                <h2 className="text-2xl font-semibold text-white md:text-3xl">
                   Choose Date
                 </h2>
               </div>
             </div>
 
-            <p className="text-gray-400 text-sm md:text-base max-w-xl mt-3">
+            <p className="mt-3 max-w-xl text-sm text-gray-400 md:text-base">
               Pick a date to continue booking your movie tickets.
             </p>
 
             {/* Date selector */}
-            <div className="flex items-center gap-3 md:gap-5 mt-8">
+            <div className="mt-8 flex items-center gap-3 md:gap-5">
               <button
                 type="button"
-                className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition-all"
+                className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-white sm:flex"
               >
-                <ChevronLeftIcon className="w-5 h-5" />
+                <ChevronLeftIcon className="h-5 w-5" />
               </button>
 
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:flex md:flex-wrap gap-3 md:gap-4">
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:flex md:flex-wrap md:gap-4">
                 {dates.map((date) => {
                   const dateObj = new Date(date);
                   const isSelected = selected === date;
@@ -67,12 +76,11 @@ const DateSelect = ({ dateTime, id }) => {
                       type="button"
                       onClick={() => setSelected(date)}
                       key={date}
-                      className={`group relative flex flex-col items-center justify-center h-20 w-20 rounded-2xl border transition-all duration-300
-                        ${
-                          isSelected
-                            ? "bg-primary text-white border-primary shadow-[0_0_25px_rgba(255,0,90,0.45)] scale-105"
-                            : "bg-white/5 text-gray-300 border-white/10 hover:bg-primary/15 hover:border-primary/40 hover:text-white"
-                        }`}
+                      className={`group relative flex h-20 w-24 flex-col items-center justify-center rounded-2xl border transition-all duration-300 md:w-26 lg:w-28 ${
+                        isSelected
+                          ? "scale-105 border-primary bg-primary text-white shadow-[0_0_25px_rgba(255,0,90,0.45)]"
+                          : "border-white/10 bg-white/5 text-gray-300 hover:border-primary/40 hover:bg-primary/15 hover:text-white"
+                      }`}
                     >
                       <span className="text-xs uppercase tracking-wide opacity-80">
                         {dateObj.toLocaleDateString("en-US", {
@@ -91,7 +99,7 @@ const DateSelect = ({ dateTime, id }) => {
                       </span>
 
                       {isSelected && (
-                        <span className="absolute -bottom-1 w-8 h-1 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)]" />
+                        <span className="absolute -bottom-1 h-1 w-8 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)]" />
                       )}
                     </button>
                   );
@@ -100,19 +108,19 @@ const DateSelect = ({ dateTime, id }) => {
 
               <button
                 type="button"
-                className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 text-gray-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition-all"
+                className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-white sm:flex"
               >
-                <ChevronRightIcon className="w-5 h-5" />
+                <ChevronRightIcon className="h-5 w-5" />
               </button>
             </div>
           </div>
 
           {/* Book button */}
-          <div className="w-full lg:w-auto flex justify-center lg:justify-end">
+          <div className="flex w-full justify-center lg:w-auto lg:justify-end">
             <button
               type="button"
               onClick={onBookHandler}
-              className="w-full sm:w-auto px-10 py-4 rounded-full bg-primary text-white font-medium shadow-[0_0_25px_rgba(255,0,90,0.35)] hover:bg-primary/90 hover:shadow-[0_0_35px_rgba(255,0,90,0.55)] active:scale-95 transition-all duration-300"
+              className="w-full rounded-full bg-primary px-10 py-4 font-medium text-white shadow-[0_0_25px_rgba(255,0,90,0.35)] transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_35px_rgba(255,0,90,0.55)] active:scale-95 sm:w-auto"
             >
               Book Now
             </button>
