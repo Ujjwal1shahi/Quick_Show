@@ -210,6 +210,7 @@ export const getShowDetails = async (req, res) => {
   }
 };
 
+
 export const getTrailers = async (req, res) => {
   // OMDb does not provide trailer URLs, so these are stable YouTube trailer links.
   res.json({
@@ -312,8 +313,12 @@ export const markBookingPaid = async (req, res) => {
   try {
     const booking = await Booking.findByIdAndUpdate(
       req.params.id,
-      { isPaid: true },
-      { new: true }
+      {
+        isPaid: true
+      },
+      {
+        new: true
+      }
     );
 
     if (!booking) {
