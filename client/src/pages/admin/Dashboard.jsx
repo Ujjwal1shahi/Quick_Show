@@ -6,14 +6,14 @@ import {
   UsersIcon,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { dummyDashboardData } from "../../assets/assets";
+import { getDashboardData } from "../../lib/api";
 import Loading from "../../components/Loading";
 import Title from "../../components/admin/Title";
 import BlurCircle from "../../components/BlurCircle";
 import { dateFormat } from "../../lib/dateFormat";
 
 const Dashboard = () => {
-  const currency = import.meta.env.VITE_CURRENCY;
+  const currency = import.meta.env.VITE_CURRENCY || "$";
 
   const [dashboardData, setDashboardData] = useState({
     totalBookings: 0,
@@ -48,8 +48,14 @@ const Dashboard = () => {
   ];
 
   const fetchDashboradData = async () => {
-    setDashboardData(dummyDashboardData);
-    setLoading(false);
+    try {
+      const data = await getDashboardData();
+      setDashboardData(data.dashboardData);
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -125,7 +131,7 @@ const Dashboard = () => {
 
                 <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-sm text-white backdrop-blur-md">
                   <StarIcon className="h-4 w-4 fill-primary text-primary" />
-                  {show.movie.vote_average.toFixed(1)}
+                  {Number(show.movie.vote_average || 0).toFixed(1)}
                 </div>
               </div>
 

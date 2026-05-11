@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { assets, dummyDateTimeData, dummyShowsData } from "../assets/assets";
+import { assets } from "../assets/assets";
 import Loading from "../components/Loading";
 import {
   ArrowRightIcon,
@@ -11,6 +11,7 @@ import {
 import isoTimeFormat from "../lib/isoTimeFormat";
 import BlurCircle from "../components/BlurCircle";
 import toast from "react-hot-toast";
+import { createBooking, getShowDetails } from "../lib/api";
 
 const SeatLayout = () => {
   const groupRows = [
@@ -26,23 +27,31 @@ const SeatLayout = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [show, setShow] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
 
   const navigate = useNavigate();
 
   const getShow = async () => {
-    const show = dummyShowsData.find((show) => show._id === id);
-
-    if (show) {
-      setShow({
-        movie: show,
-        dateTime: dummyDateTimeData,
-      });
+    try {
+      const data = await getShowDetails(id);
+      setShow(data.show);
+    } catch (error) {
+      console.error(error.message);
+      toast.error("Unable to load show details");
     }
   };
+
+  const occupiedSeats = selectedTime
+    ? show?.occupiedSeats?.[selectedTime.showId] || []
+    : [];
 
   const handleSeatClick = (seatId) => {
     if (!selectedTime) {
       return toast("Please select time first");
+    }
+
+    if (occupiedSeats.includes(seatId)) {
+      return toast("This seat is already booked");
     }
 
     if (!selectedSeats.includes(seatId) && selectedSeats.length >= 5) {
@@ -56,7 +65,7 @@ const SeatLayout = () => {
     );
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!selectedTime) {
       return toast("Please select show time");
     }
@@ -65,8 +74,28 @@ const SeatLayout = () => {
       return toast("Please select at least one seat");
     }
 
-    navigate("/my-bookings");
-    scrollTo(0, 0);
+    try {
+      setIsBooking(true);
+
+      await createBooking({
+        movieId: id,
+        showId: selectedTime.showId,
+        showDateTime: selectedTime.time,
+        showPrice: selectedTime.price,
+        bookedSeats: selectedSeats,
+        user: { name: "Customer" },
+      });
+
+      toast.success("Booking added to My Bookings");
+      navigate("/my-bookings");
+      scrollTo(0, 0);
+    } catch (error) {
+      toast.error(error.message || "Unable to create booking");
+      await getShow();
+      setSelectedSeats([]);
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const renderSeats = (row, count = 9) => (
@@ -75,14 +104,18 @@ const SeatLayout = () => {
         {Array.from({ length: count }, (_, i) => {
           const seatId = `${row}${i + 1}`;
           const isSelected = selectedSeats.includes(seatId);
+          const isBooked = occupiedSeats.includes(seatId);
 
           return (
             <button
               key={seatId}
               onClick={() => handleSeatClick(seatId)}
+              disabled={isBooked}
               className={`group relative h-9 w-9 rounded-lg border text-[11px] font-medium transition-all duration-300 active:scale-95
                 ${
-                  isSelected
+                  isBooked
+                    ? "cursor-not-allowed border-gray-700 bg-gray-800/80 text-gray-500 line-through opacity-60"
+                    : isSelected
                     ? "border-primary bg-primary/40 text-white shadow-[0_0_18px_rgba(255,0,90,0.45)]"
                     : "border-white/10 bg-white/[0.04] text-gray-300 hover:border-primary/50 hover:bg-primary/15 hover:text-white"
                 }`}
@@ -120,10 +153,10 @@ const SeatLayout = () => {
   </div>
 
   <div className="space-y-2">
-    {show.dateTime[date]?.map((item, index) => (
+    {(show.dateTime[date] || []).map((item, index) => (
       <button
         key={index}
-        onClick={() => setSelectedTime(item)}
+        onClick={() => { setSelectedTime(item); setSelectedSeats([]); }}
         className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-2 text-left transition-all duration-300 active:scale-95
           ${
             selectedTime?.time === item.time
@@ -191,6 +224,11 @@ const SeatLayout = () => {
                 <span className="h-4 w-4 rounded border border-primary bg-primary shadow-[0_0_12px_rgba(255,0,90,0.45)]" />
                 Selected
               </div>
+
+              <div className="flex items-center gap-2">
+                <span className="h-4 w-4 rounded border border-gray-700 bg-gray-800/80 opacity-60" />
+                Booked
+              </div>
             </div>
 
             {/* Seats */}
@@ -239,9 +277,10 @@ const SeatLayout = () => {
 
             <button
               onClick={handleCheckout}
-              className="mt-12 flex items-center gap-2 rounded-full bg-primary px-10 py-4 text-sm font-medium text-white shadow-[0_0_25px_rgba(255,0,90,0.35)] transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_35px_rgba(255,0,90,0.55)] active:scale-95"
+              disabled={isBooking}
+              className="mt-12 flex items-center gap-2 rounded-full bg-primary px-10 py-4 text-sm font-medium text-white shadow-[0_0_25px_rgba(255,0,90,0.35)] transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_35px_rgba(255,0,90,0.55)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Proceed to Checkout
+              {isBooking ? "Adding Booking..." : "Proceed to Checkout"}
               <ArrowRightIcon strokeWidth={4} className="h-4 w-4" />
             </button>
           </div>

@@ -11,13 +11,17 @@ const MovieCard = ({ movie }) => {
     window.scrollTo(0, 0);
   };
 
+  const genres = movie.genres?.slice(0, 2).map((genre) => genre.name).join(" | ") || "Movie";
+  const year = movie.release_date ? new Date(movie.release_date).getFullYear() : movie.year || "N/A";
+  const rating = Number(movie.vote_average || 0).toFixed(1);
+
   return (
     <article className="group relative w-66 overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5.5 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.25)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-primary/45 hover:bg-white/8">
       <button onClick={openMovie} className="block w-full overflow-hidden rounded-2xl">
         <img
-          src={movie.backdrop_path}
+          src={movie.backdrop_path || movie.poster_path}
           alt={movie.title}
-          className="h-52 w-full object-cover object-bottom-right transition duration-500 group-hover:scale-105"
+          className="h-52 w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
       </button>
 
@@ -27,12 +31,7 @@ const MovieCard = ({ movie }) => {
         <p className="truncate text-base font-semibold text-white">{movie.title}</p>
 
         <p className="mt-2 line-clamp-1 text-sm text-gray-400">
-          {new Date(movie.release_date).getFullYear()} • {" "}
-          {movie.genres
-            .slice(0, 2)
-            .map((genre) => genre.name)
-            .join(" | ")} {" "}
-          • {timeFormat(movie.runtime)}
+          {year} • {genres} • {timeFormat(movie.runtime || 120)}
         </p>
 
         <div className="mt-5 flex items-center justify-between pb-2">
@@ -46,7 +45,7 @@ const MovieCard = ({ movie }) => {
 
           <p className="mt-1 flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-2.5 py-1 text-sm text-gray-300">
             <StarIcon className="h-4 w-4 fill-primary text-primary" />
-            {movie.vote_average.toFixed(1)}
+            {rating}
           </p>
         </div>
       </div>

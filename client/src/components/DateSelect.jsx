@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import BlurCircle from "./BlurCircle";
 import {
   ChevronLeftIcon,
@@ -10,9 +10,19 @@ import toast from "react-hot-toast";
 
 const DateSelect = ({ dateTime, id }) => {
   const navigate = useNavigate();
+  const scrollRef = useRef(null);
   const [selected, setSelected] = useState(null);
 
   const dates = Object.keys(dateTime || {});
+
+  const scrollDates = (direction) => {
+    if (!scrollRef.current) return;
+
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -260 : 260,
+      behavior: "smooth",
+    });
+  };
 
   const onBookHandler = () => {
     if (!selected) {
@@ -31,13 +41,11 @@ const DateSelect = ({ dateTime, id }) => {
       <BlurCircle top="100px" left="110px" />
       <BlurCircle bottom="90px" right="110px" />
 
-      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_0_45px_rgba(255,0,90,0.12)] backdrop-blur-xl">
-        {/* Gradient glow layer */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-pink-500/10" />
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-white/4 shadow-[0_0_45px_rgba(255,0,90,0.12)] backdrop-blur-xl">
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-pink-500/10" />
 
         <div className="relative z-10 flex flex-col items-center justify-between gap-10 p-6 md:p-10 lg:flex-row lg:p-12">
-          {/* Left content */}
-          <div className="w-full flex-1">
+          <div className="w-full flex-1 overflow-hidden">
             <div className="mb-3 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-full border border-primary/30 bg-primary/15">
                 <CalendarDaysIcon className="h-5 w-5 text-primary" />
@@ -57,16 +65,23 @@ const DateSelect = ({ dateTime, id }) => {
               Pick a date to continue booking your movie tickets.
             </p>
 
-            {/* Date selector */}
-            <div className="mt-8 flex items-center gap-3 md:gap-5">
+            <div className="mt-8 flex w-full items-center gap-3 md:gap-5">
               <button
                 type="button"
-                className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-white sm:flex"
+                onClick={() => scrollDates("left")}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-white"
               >
                 <ChevronLeftIcon className="h-5 w-5" />
               </button>
 
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:flex md:flex-wrap md:gap-4">
+              <div
+                ref={scrollRef}
+                className="flex flex-1 gap-3 overflow-x-auto scroll-smooth py-2 md:gap-4 [&::-webkit-scrollbar]:hidden"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
                 {dates.map((date) => {
                   const dateObj = new Date(date);
                   const isSelected = selected === date;
@@ -76,7 +91,7 @@ const DateSelect = ({ dateTime, id }) => {
                       type="button"
                       onClick={() => setSelected(date)}
                       key={date}
-                      className={`group relative flex h-20 w-24 flex-col items-center justify-center rounded-2xl border transition-all duration-300 md:w-26 lg:w-28 ${
+                      className={`group relative flex h-20 w-24 shrink-0 flex-col items-center justify-center rounded-2xl border transition-all duration-300 md:w-26 lg:w-28 ${
                         isSelected
                           ? "scale-105 border-primary bg-primary text-white shadow-[0_0_25px_rgba(255,0,90,0.45)]"
                           : "border-white/10 bg-white/5 text-gray-300 hover:border-primary/40 hover:bg-primary/15 hover:text-white"
@@ -108,14 +123,14 @@ const DateSelect = ({ dateTime, id }) => {
 
               <button
                 type="button"
-                className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-white sm:flex"
+                onClick={() => scrollDates("right")}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-gray-300 transition-all hover:border-primary/40 hover:bg-primary/20 hover:text-white"
               >
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
             </div>
           </div>
 
-          {/* Book button */}
           <div className="flex w-full justify-center lg:w-auto lg:justify-end">
             <button
               type="button"

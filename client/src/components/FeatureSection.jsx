@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import BlurCircle from "./BlurCircle";
 import { useNavigate } from "react-router-dom";
-import { dummyShowsData } from "../assets/assets";
 import MovieCard from "./MovieCard";
+import Loading from "./Loading";
+import { getMovies } from "../lib/api";
 import "./HeroSection.css";
 
 const FeatureSection = () => {
   const navigate = useNavigate();
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        const data = await getMovies();
+        setMovies(data.movies || []);
+      } catch (error) {
+        console.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMovies();
+  }, []);
 
   const goMovies = () => {
     navigate("/movies");
@@ -29,10 +47,9 @@ const FeatureSection = () => {
             </div>
             <h2 className="text-3xl font-semibold text-white md:text-5xl">Now Showing</h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-gray-400">
-              Book from the latest movies with premium seats, smooth checkout, and trailer previews.
+              Movie cards are loaded from your server, and the server fetches them from OMDb.
             </p>
           </div>
-
 
           <button
             onClick={goMovies}
@@ -43,11 +60,15 @@ const FeatureSection = () => {
           </button>
         </div>
 
-        <div className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-between">
-          {dummyShowsData.slice(0, 8).map((show) => (
-            <MovieCard key={show._id} movie={show} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="py-16"><Loading /></div>
+        ) : (
+          <div className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-between">
+            {movies.slice(0, 8).map((show) => (
+              <MovieCard key={show._id} movie={show} />
+            ))}
+          </div>
+        )}
 
         <div className="mt-14 flex justify-center">
           <button

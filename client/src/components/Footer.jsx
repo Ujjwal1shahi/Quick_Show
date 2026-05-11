@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { assets } from "../assets/assets";
+import BlurCircle from "../components/BlurCircle"
 
 const Footer = () => {
   const resourceLinks = [
@@ -75,29 +76,11 @@ const Footer = () => {
       <div className="absolute left-1/2 top-20 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/20 blur-[140px]" />
       <div className="absolute bottom-10 right-10 h-64 w-64 rounded-full bg-pink-600/10 blur-[120px]" />
 
+
       <div className="relative mx-auto max-w-337.5 overflow-hidden rounded-t-4xl border border-white/10 bg-[#111113]/90 px-5 py-10 text-white shadow-2xl shadow-black/40 backdrop-blur-xl sm:px-8 md:px-14 lg:px-20">
         <div className="grid gap-12 lg:grid-cols-6">
           <div className="lg:col-span-3">
             <Link to="/" className="group inline-flex items-center gap-3">
-              {/* <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-primary via-pink-500 to-red-500 shadow-[0_0_24px_rgba(255,0,100,0.45)] transition-transform duration-300 group-hover:scale-105">
-                <div className="absolute inset-0.5 rounded-2xl bg-black/70 backdrop-blur-sm" />
-
-                <svg
-                  className="relative z-10 ml-0.5 h-5 w-5 fill-white text-white"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-
-              <div className="flex flex-col leading-none">
-                <h2 className="text-2xl font-extrabold tracking-wide text-white">
-                  Quick<span className="text-primary">Show</span>
-                </h2>
-                <span className="mt-1 text-[10px] uppercase tracking-[0.35em] text-gray-400">
-                  Movie Booking
-                </span>
-              </div> */}
               <div className="cinema-badge">
                 <span>Cinema</span>
                 <p>Featured Release</p>

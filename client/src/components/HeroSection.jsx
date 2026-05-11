@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Calendar, Clock, Play, Star, Ticket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { dummyShowsData } from "../assets/assets";
+import { getMovies } from "../lib/api";
 import "./HeroSection.css";
 
 const getImageUrl = (path) => {
@@ -32,8 +32,21 @@ const HeroSection = () => {
   const heroRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTrailerClicked, setIsTrailerClicked] = useState(false);
+  const [movies, setMovies] = useState([]);
 
-  const movies = dummyShowsData || [];
+  useEffect(() => {
+    const loadMovies = async () => {
+      try {
+        const data = await getMovies();
+        setMovies(data.movies || []);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+
+    loadMovies();
+  }, []);
+
   const currentMovie = movies[currentIndex] || movies[0] || {};
 
   const movieData = useMemo(() => {
