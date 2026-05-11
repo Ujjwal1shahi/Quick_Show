@@ -66,16 +66,16 @@ const MyBookings = () => {
               const genres = movie.genres?.map((genre) => genre.name).join(" | ");
 
               return (
-                <div key={item._id} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl">
+                <div key={item._id} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/4 shadow-2xl backdrop-blur-xl">
                   <div className="absolute left-0 top-0 h-full w-1 bg-primary opacity-80" />
 
                   <div className="flex flex-col md:flex-row">
                     <div className="relative w-full shrink-0 md:w-52">
                       <img src={movie.poster_path} alt={movie.title} className="h-48 w-full object-cover object-top md:h-full" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/40" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent md:bg-linear-to-r md:from-transparent md:to-black/40" />
                     </div>
 
-                    <div className="flex min-h-[250px] flex-1 flex-col justify-between p-4 md:p-5">
+                    <div className="flex min-h-62.5 flex-1 flex-col justify-between p-4 md:p-5">
                       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="max-w-xl">
                           <h2 className="text-lg font-semibold leading-tight text-white transition-colors group-hover:text-primary md:text-xl">{movie.title}</h2>
@@ -86,12 +86,12 @@ const MyBookings = () => {
                           </div>
 
                           <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-300">
-                            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5">
+                            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1.5">
                               <Clock size={14} className="text-primary" />
                               <span>{timeFormat(movie.runtime || 120)}</span>
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5">
+                            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1.5">
                               <CalendarDays size={14} className="text-primary" />
                               <span>{dateFormat(item.show.showDateTime)}</span>
                             </div>

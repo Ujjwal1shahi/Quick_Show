@@ -26,9 +26,6 @@ const getOmdbBaseUrl = () => {
     throw new Error("OMDB_API is missing in server/.env");
   }
 
-  // Supports both formats:
-  // OMDB_API=http://www.omdbapi.com/?apikey=YOUR_KEY&
-  // OMDB_API=YOUR_KEY
   if (raw.startsWith("http")) {
     return raw.replace("[", "").replace("]", "");
   }
@@ -43,7 +40,7 @@ const omdbRequest = async (params) => {
 
   const { data } = await axios.get(url, {
     params,
-    timeout: 10000,
+    timeout: 20000,
   });
 
   if (data?.Response === "False") {
