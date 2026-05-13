@@ -117,7 +117,7 @@ const SeatLayout = () => {
                     ? "cursor-not-allowed border-gray-700 bg-gray-800/80 text-gray-500 line-through opacity-60"
                     : isSelected
                     ? "border-primary bg-primary/40 text-white shadow-[0_0_18px_rgba(255,0,90,0.45)]"
-                    : "border-white/10 bg-white/[0.04] text-gray-300 hover:border-primary/50 hover:bg-primary/15 hover:text-white"
+                    : "border-white/10 bg-white/4 text-gray-300 hover:border-primary/50 hover:bg-primary/15 hover:text-white"
                 }`}
             >
               {seatId}
@@ -161,7 +161,7 @@ const SeatLayout = () => {
           ${
             selectedTime?.time === item.time
               ? "border-primary bg-primary/40 text-white shadow-[0_0_22px_rgba(255,0,90,0.40)]"
-              : "border-white/10 bg-white/[0.04] text-gray-300 hover:border-primary/40 hover:bg-primary/15 hover:text-white"
+              : "border-white/10 bg-white/4 text-gray-300 hover:border-primary/40 hover:bg-primary/15 hover:text-white"
           }`}
       >
         <span
@@ -216,7 +216,7 @@ const SeatLayout = () => {
             {/* Seat indicators */}
             <div className="mb-8 flex flex-wrap items-center justify-center gap-5 text-xs text-gray-400">
               <div className="flex items-center gap-2">
-                <span className="h-4 w-4 rounded border border-primary/20 bg-white/[0.04]" />
+                <span className="h-4 w-4 rounded border border-primary/20 bg-white/4" />
                 Available
               </div>
 
@@ -250,7 +250,7 @@ const SeatLayout = () => {
 
             {/* Selected seat info */}
             <div className="mt-6 grid w-full max-w-3xl grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+              <div className="rounded-2xl border border-white/10 bg-white/4 p-5">
                 <div className="flex items-center gap-2 text-primary">
                   <CheckCircleIcon className="h-4 w-4" />
                   <p className="text-sm font-medium">Selected Seats</p>
@@ -263,7 +263,7 @@ const SeatLayout = () => {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="rounded-2xl border border-white/10 bg-white/4 p-4">
                 <div className="flex items-center gap-2 text-primary">
                   <ClockIcon className="h-4 w-4" />
                   <p className="text-sm font-medium">Selected Time</p>

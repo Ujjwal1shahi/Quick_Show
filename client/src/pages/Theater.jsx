@@ -126,7 +126,7 @@ const Theater = () => {
             {filteredTheaters.map((theater) => (
               <div
                 key={theater.id}
-                className="group overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-lg shadow-black/30 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-white/[0.07]"
+                className="group overflow-hidden rounded-3xl border border-white/10 bg-white/4 shadow-lg shadow-black/30 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-white/[0.07]"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -135,7 +135,7 @@ const Theater = () => {
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/30 to-transparent" />
 
                   <div className="absolute left-4 top-4 flex items-center gap-1 rounded-full bg-black/60 px-3 py-1 text-sm text-white backdrop-blur-md">
                     <StarIcon className="h-4 w-4 fill-primary text-primary" />
@@ -203,7 +203,7 @@ const Theater = () => {
             ))}
           </div>
         ) : (
-          <div className="flex min-h-[300px] items-center justify-center rounded-3xl border border-white/10 bg-white/[0.04]">
+          <div className="flex min-h-75 items-center justify-center rounded-3xl border border-white/10 bg-white/4">
             <p className="text-gray-400">No theater found.</p>
           </div>
         )}

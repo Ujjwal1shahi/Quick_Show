@@ -76,7 +76,7 @@ const Login = () => {
       <div className="absolute -right-40 bottom-20 h-72 w-72 rounded-full bg-pink-500/20 blur-[120px]" />
 
       <div className="relative z-10 flex mt-10 min-h-screen items-center justify-center px-6 py-10">
-        <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl md:grid-cols-2">
+        <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-white/4 shadow-2xl backdrop-blur-xl md:grid-cols-2">
           {/* Left Section */}
           <div className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-primary/30 via-black to-pink-500/20 p-10 md:flex">
             <div>
@@ -194,7 +194,7 @@ const Login = () => {
             {/* Google Button */}
             <button
               type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/3 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]"
             >
               <span className="text-lg">G</span>
               Continue with Google
