@@ -16,6 +16,8 @@ import ListShows from './pages/admin/ListShows'
 import ListBookings from './pages/admin/ListBookings'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import Theater from './pages/Theater'
+import Releases from './pages/Releases'
 
 const App = () => {
   const isAdminRoute = useLocation().pathname.startsWith('/admin')
@@ -33,6 +35,8 @@ const App = () => {
         <Route path='/favourite' element={<Favourite/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path='/theater' element={< Theater />} />
+        <Route path='/releases' element={<Releases/>} />
 
         <Route path='/admin/*' element={<Layout/>}>
            <Route index element={<Dashboard/>} />

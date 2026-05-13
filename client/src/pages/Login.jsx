@@ -78,7 +78,7 @@ const Login = () => {
       <div className="relative z-10 flex mt-10 min-h-screen items-center justify-center px-6 py-10">
         <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl md:grid-cols-2">
           {/* Left Section */}
-          <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary/30 via-black to-pink-500/20 p-10 md:flex">
+          <div className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-primary/30 via-black to-pink-500/20 p-10 md:flex">
             <div>
               <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
                 <FilmIcon className="h-8 w-8 text-primary" />
@@ -172,13 +172,6 @@ const Login = () => {
                   <input type="checkbox" className="h-4 w-4 accent-primary" />
                   Remember me
                 </label>
-
-                <Link
-                  to="/forgot-password"
-                  className="text-primary transition hover:underline"
-                >
-                  Forgot password?
-                </Link>
               </div>
 
               {/* Button */}
