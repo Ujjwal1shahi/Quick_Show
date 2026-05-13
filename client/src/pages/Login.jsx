@@ -6,10 +6,68 @@ import {
   EyeOffIcon,
   FilmIcon,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if(!formData.email || !formData.password){
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${backendUrl}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if(!data.success){
+        toast.error(data.message || "Login failed");
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      toast.success("Login Successfull");
+      navigate("/");
+
+    } catch (error) {
+      console.log("Login error : ", error);
+      toast.error("Something went wrong");      
+    }
+    finally{
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#09090f] text-white">
@@ -54,7 +112,7 @@ const Login = () => {
               </p>
             </div>
 
-            <form className="space-y-5">
+            <form onSubmit={handleLogin} className="space-y-5">
               {/* Email */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">
@@ -65,8 +123,12 @@ const Login = () => {
                   <MailIcon className="h-5 w-5 text-gray-400" />
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Enter your email"
                     className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+                    required
                   />
                 </div>
               </div>
@@ -82,8 +144,12 @@ const Login = () => {
 
                   <input
                     type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
                     placeholder="Enter your password"
                     className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+                    required
                   />
 
                   <button
@@ -118,9 +184,10 @@ const Login = () => {
               {/* Button */}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:scale-[1.01] hover:bg-primary/90 active:scale-[0.99]"
+                disabled={loading}
+                className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:scale-[1.01] hover:bg-primary/90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Login
+                {loading ? "Logging in..." : "Login"}
               </button>
             </form>
 
@@ -132,7 +199,10 @@ const Login = () => {
             </div>
 
             {/* Google Button */}
-            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]">
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]"
+            >
               <span className="text-lg">G</span>
               Continue with Google
             </button>

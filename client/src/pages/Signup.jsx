@@ -7,11 +7,90 @@ import {
   EyeOffIcon,
   FilmIcon,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    if(
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ){
+      toast.error("Please fill all fields");
+      return;
+    }
+
+    if(formData.password.length < 6){
+      toast.error("Password and confirm password do not match");
+      return;
+    }
+
+    if(!acceptedTerms){
+      toast.error("Please accept Terms and Condition");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${backendUrl}/api/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if(!data.success){
+        toast.error(data.message || "SignUp Failed");
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      toast.success("Account is created successfully");
+      navigate("/");
+    } catch (error) {
+      console.log("SignUp Error : ", error);
+      toast.error("Something went wrong");      
+    }
+    finally{
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#09090f] text-white">
@@ -56,7 +135,7 @@ const Signup = () => {
               </p>
             </div>
 
-            <form className="space-y-5">
+            <form onSubmit={handleSignup} className="space-y-5">
               {/* Full Name */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">
@@ -67,8 +146,12 @@ const Signup = () => {
                   <UserIcon className="h-5 w-5 text-gray-400" />
                   <input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="Enter your full name"
                     className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+                    required
                   />
                 </div>
               </div>
@@ -83,8 +166,12 @@ const Signup = () => {
                   <MailIcon className="h-5 w-5 text-gray-400" />
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Enter your email"
                     className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+                    required
                   />
                 </div>
               </div>
@@ -100,8 +187,12 @@ const Signup = () => {
 
                   <input
                     type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
                     placeholder="Create password"
                     className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+                    required
                   />
 
                   <button
@@ -129,8 +220,12 @@ const Signup = () => {
 
                   <input
                     type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                     placeholder="Confirm password"
                     className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+                    required
                   />
 
                   <button
@@ -151,7 +246,12 @@ const Signup = () => {
 
               {/* Terms */}
               <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-400">
-                <input type="checkbox" className="mt-1 h-4 w-4 accent-primary" />
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-1 h-4 w-4 accent-primary"
+                />
                 <span>
                   I agree to the{" "}
                   <Link to="/terms" className="text-primary hover:underline">
@@ -167,9 +267,10 @@ const Signup = () => {
               {/* Button */}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:scale-[1.01] hover:bg-primary/90 active:scale-[0.99]"
+                disabled={loading}
+                className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:scale-[1.01] hover:bg-primary/90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Create Account
+                {loading ? "Creating account..." : "Create Account"}
               </button>
             </form>
 
@@ -181,14 +282,20 @@ const Signup = () => {
             </div>
 
             {/* Google Button */}
-            <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]">
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]"
+            >
               <span className="text-lg">G</span>
               Continue with Google
             </button>
 
             <p className="mt-7 text-center text-sm text-gray-400">
               Already have an account?{" "}
-              <Link to="/login" className="font-medium text-primary hover:underline">
+              <Link
+                to="/login"
+                className="font-medium text-primary hover:underline"
+              >
                 Login
               </Link>
             </p>
