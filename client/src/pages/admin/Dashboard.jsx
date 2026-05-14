@@ -37,7 +37,7 @@ const Dashboard = () => {
     },
     {
       title: "Active Shows",
-      value: dashboardData.activeShows.length || "0",
+      value: dashboardData.activeShows?.length || "0",
       icon: PlayCircleIcon,
     },
     {
@@ -47,10 +47,18 @@ const Dashboard = () => {
     },
   ];
 
-  const fetchDashboradData = async () => {
+  const fetchDashboardData = async () => {
     try {
       const data = await getDashboardData();
-      setDashboardData(data.dashboardData);
+
+      setDashboardData(
+        data.dashboardData || {
+          totalBookings: 0,
+          totalRevenue: 0,
+          activeShows: [],
+          totalUser: 0,
+        }
+      );
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -59,7 +67,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboradData();
+    fetchDashboardData();
   }, []);
 
   return !loading ? (
@@ -69,7 +77,6 @@ const Dashboard = () => {
 
       <Title text1="Admin" text2="Dashboard" />
 
-      {/* Dashboard Cards */}
       <div className="relative mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {dashboardCards.map((card, index) => {
           const Icon = card.icon;
@@ -101,8 +108,7 @@ const Dashboard = () => {
         })}
       </div>
 
-      {/* Active Shows */}
-      <div className="relative mt-12">
+      <div className="relative mt-12 w-full">
         <div className="mb-5 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-white">Active Shows</h2>
@@ -114,49 +120,74 @@ const Dashboard = () => {
 
         <BlurCircle bottom="80px" left="100px" />
 
-        <div className="grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {dashboardData.activeShows.map((show) => (
-            <div
-              key={show._id}
-              className="group overflow-hidden rounded-2xl border border-primary/20 bg-primary/10 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-primary/15 hover:shadow-primary/20"
-            >
-              <div className="relative h-64 w-full overflow-hidden">
-                <img
-                  src={show.movie.poster_path}
-                  alt={show.movie.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
+        {dashboardData.activeShows && dashboardData.activeShows.length > 0 ? (
+          <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {dashboardData.activeShows.map((show) => (
+              <div
+                key={show._id}
+                className="group w-full overflow-hidden rounded-2xl border border-primary/20 bg-primary/10 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-primary/15 hover:shadow-primary/20"
+              >
+                <div className="relative h-72 w-full overflow-hidden">
+                  {show.movie?.poster_path ? (
+                    <img
+                      src={show.movie.poster_path}
+                      alt={show.movie?.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-black/40 text-sm text-gray-500">
+                      No Poster
+                    </div>
+                  )}
 
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
-                <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-sm text-white backdrop-blur-md">
-                  <StarIcon className="h-4 w-4 fill-primary text-primary" />
-                  {Number(show.movie.vote_average || 0).toFixed(1)}
+                  <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-sm text-white backdrop-blur-md">
+                    <StarIcon className="h-4 w-4 fill-primary text-primary" />
+                    {Number(show.movie?.vote_average || 0).toFixed(1)}
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-4">
-                <h3 className="truncate text-base font-semibold text-white">
-                  {show.movie.title}
-                </h3>
+                <div className="p-4">
+                  <h3 className="truncate text-base font-semibold text-white">
+                    {show.movie?.title || "Untitled Movie"}
+                  </h3>
 
-                <div className="mt-3 flex items-center justify-between">
-                  <p className="text-lg font-semibold text-primary">
-                    {currency} {show.showPrice}
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-lg font-semibold text-primary">
+                      {currency} {show.showPrice}
+                    </p>
+
+                    <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary">
+                      Active
+                    </span>
+                  </div>
+
+                  <p className="mt-3 border-t border-gray-700/50 pt-3 text-sm text-gray-400">
+                    {show.showDateTime
+                      ? dateFormat(show.showDateTime)
+                      : "Date not available"}
                   </p>
-
-                  <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs text-primary">
-                    Active
-                  </span>
                 </div>
-
-                <p className="mt-3 border-t border-gray-700/50 pt-3 text-sm text-gray-400">
-                  {dateFormat(show.showDateTime)}
-                </p>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="w-full rounded-3xl border border-white/10 bg-white/4 px-6 py-14 text-center shadow-xl backdrop-blur-xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <PlayCircleIcon className="h-8 w-8" />
             </div>
-          ))}
-        </div>
+
+            <h3 className="mt-5 text-xl font-semibold text-white">
+              No movies added
+            </h3>
+
+            <p className="mx-auto mt-2 max-w-md text-sm text-gray-400">
+              You have not added any movie show yet. Add a movie from the Add
+              Shows page and it will appear here.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   ) : (

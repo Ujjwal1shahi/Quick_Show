@@ -195,7 +195,7 @@ const Theater = () => {
                     ))}
                   </div>
 
-                  <button onClick={() => navigate("/movies")} className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary/80">
+                  <button onClick={() => navigate("/releases")} className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary/80">
                     View Shows
                   </button>
                 </div>

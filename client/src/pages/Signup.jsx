@@ -33,25 +33,28 @@ const Signup = () => {
     }));
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-
-    if(
+  const handleAdminSignup = async () => {
+    if (
       !formData.name ||
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword
-    ){
+    ) {
       toast.error("Please fill all fields");
       return;
     }
 
-    if(formData.password.length < 6){
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Password and confirm password do not match");
       return;
     }
 
-    if(!acceptedTerms){
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    if (!acceptedTerms) {
       toast.error("Please accept Terms and Condition");
       return;
     }
@@ -68,29 +71,93 @@ const Signup = () => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          role: "admin",
         }),
       });
 
       const data = await res.json();
 
-      if(!data.success){
-        toast.error(data.message || "SignUp Failed");
+      if (!data.success) {
+        toast.error(data.message || "Admin signup failed");
         return;
       }
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      toast.success("Account is created successfully");
+      toast.success("Admin account created successfully");
       navigate("/");
     } catch (error) {
-      console.log("SignUp Error : ", error);
-      toast.error("Something went wrong");      
-    }
-    finally{
+      console.log("Admin Signup Error : ", error);
+      toast.error("Something went wrong");
+    } finally {
       setLoading(false);
     }
   };
+
+  const handleSignup = async (e) => {
+  e.preventDefault();
+
+  if (
+    !formData.name ||
+    !formData.email ||
+    !formData.password ||
+    !formData.confirmPassword
+  ) {
+    toast.error("Please fill all fields");
+    return;
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    toast.error("Password and confirm password do not match");
+    return;
+  }
+
+  if (formData.password.length < 6) {
+    toast.error("Password must be at least 6 characters");
+    return;
+  }
+
+  if (!acceptedTerms) {
+    toast.error("Please accept Terms and Condition");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await fetch(`${backendUrl}/api/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: "user",
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      toast.error(data.message || "Signup failed");
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    toast.success("Account created successfully");
+    navigate("/");
+  } catch (error) {
+    console.log("Signup Error : ", error);
+    toast.error("Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#09090f] text-white">
@@ -230,9 +297,7 @@ const Signup = () => {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="text-gray-400 transition hover:text-white"
                   >
                     {showConfirmPassword ? (
@@ -281,13 +346,14 @@ const Signup = () => {
               <div className="h-px flex-1 bg-white/10" />
             </div>
 
-            {/* Google Button */}
+            {/* admin Button */}
             <button
               type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]"
+              onClick={handleAdminSignup}
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-primary/30 bg-primary/10 py-3 text-sm font-medium text-primary transition hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <span className="text-lg">G</span>
-              Continue with Google
+              Sign up as Admin
             </button>
 
             <p className="mt-7 text-center text-sm text-gray-400">

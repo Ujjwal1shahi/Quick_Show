@@ -4,15 +4,35 @@ import "dotenv/config";
 import connect_Db from "./configs/db.js";
 import authRouter from "./routes/authRoutes.js";
 import movieRouter from "./routes/movieRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 await connect_Db();
 
+const configuredOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowLocalhostDevOrigin = (origin = "") => {
+  if (process.env.NODE_ENV === "production") return false;
+  return /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+};
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow non-browser clients (curl, Postman, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (configuredOrigins.includes(origin) || allowLocalhostDevOrigin(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );
@@ -25,6 +45,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api", movieRouter);
+app.use("/api/admin", adminRouter);
 
 
 app.listen(PORT, () => {

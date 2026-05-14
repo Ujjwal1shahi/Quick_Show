@@ -5,6 +5,7 @@ import {
   getDashboardData,
   getMovieDetails,
   getMovies,
+  getReleases,
   getShowDetails,
   getTrailers,
   markBookingPaid,
@@ -14,6 +15,7 @@ const movieRouter = express.Router();
 
 movieRouter.get("/movies", getMovies);
 movieRouter.get("/movies/:id", getMovieDetails);
+movieRouter.get("/releases", getReleases);
 movieRouter.get("/shows/:id", getShowDetails);
 movieRouter.get("/trailers", getTrailers);
 movieRouter.post("/bookings", createBooking);

@@ -6,24 +6,17 @@ import {
   StarIcon,
   BellIcon,
   Loader2Icon,
+  TicketIcon,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import BlurCircle from "../components/BlurCircle";
-
-const releaseMovieTitles = [
-  "Avatar: Fire and Ash",
-  "Avengers: Doomsday",
-  "The Batman Part II",
-  "Superman",
-  "Jurassic World Rebirth",
-  "Mission: Impossible - The Final Reckoning",
-  "Dune: Part Two",
-  "Inside Out 2",
-];
+import { getReleases } from "../lib/api";
 
 const filterOptions = ["All", "Upcoming", "Now Released"];
 
 const Releases = () => {
-  const apiKey = import.meta.env.VITE_OMDB_API_KEY;
+  const navigate = useNavigate();
 
   const [releases, setReleases] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -42,41 +35,17 @@ const Releases = () => {
     try {
       setLoading(true);
 
-      const moviePromises = releaseMovieTitles.map(async (title) => {
-        const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${apiKey}&t=${encodeURIComponent(
-            title
-          )}`
-        );
+      const data = await getReleases();
 
-        const data = await res.json();
+      const movies = (data.releases || []).map((movie) => ({
+        ...movie,
+        status: movie.status || getMovieStatus(movie.year),
+      }));
 
-        if (data.Response === "True") {
-          return {
-            id: data.imdbID,
-            title: data.Title,
-            genre: data.Genre,
-            date: data.Released,
-            duration: data.Runtime,
-            rating: data.Rated,
-            imdbRating: data.imdbRating,
-            year: data.Year,
-            status: getMovieStatus(data.Year),
-            image:
-              data.Poster !== "N/A"
-                ? data.Poster
-                : "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80",
-            plot: data.Plot,
-          };
-        }
-
-        return null;
-      });
-
-      const movies = await Promise.all(moviePromises);
-      setReleases(movies.filter(Boolean));
+      setReleases(movies);
     } catch (error) {
       console.log("Error fetching releases:", error);
+      toast.error("Failed to load releases");
     } finally {
       setLoading(false);
     }
@@ -85,6 +54,64 @@ const Releases = () => {
   useEffect(() => {
     fetchReleases();
   }, []);
+
+  const handleNotify = (movie) => {
+    const savedNotifications =
+      JSON.parse(localStorage.getItem("releaseNotifications")) || [];
+
+    const alreadyExists = savedNotifications.some(
+      (item) => item.id === movie.id
+    );
+
+    if (alreadyExists) {
+      toast.success("Already added to notifications");
+      return;
+    }
+
+    const updatedNotifications = [
+      ...savedNotifications,
+      {
+        id: movie.id,
+        title: movie.title,
+        date: movie.date,
+        image: movie.image,
+        status: movie.status,
+      },
+    ];
+
+    localStorage.setItem(
+      "releaseNotifications",
+      JSON.stringify(updatedNotifications)
+    );
+
+    toast.success(`You will be notified for ${movie.title}`);
+  };
+
+  const handleWatchTrailer = (movie) => {
+    if (movie.trailerUrl) {
+      window.open(movie.trailerUrl, "_blank");
+      return;
+    }
+
+    const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(
+      `${movie.title} official trailer`
+    )}`;
+
+    window.open(youtubeSearchUrl, "_blank");
+  };
+
+  const handleBookTickets = (movie) => {
+    if (movie.status !== "Now Released") {
+      handleNotify(movie);
+      return;
+    }
+
+    navigate(`/movies/${movie.id}`);
+  };
+
+  const handleViewDetails = (movie) => {
+    navigate(`/movies/${movie.id}`);
+  };
 
   const filteredReleases =
     activeFilter === "All"
@@ -118,7 +145,7 @@ const Releases = () => {
             </h1>
 
             <p className="mt-3 max-w-2xl text-sm text-gray-400 md:text-base">
-              Latest movie details fetched from OMDB API.
+              Latest movie details fetched from your backend OMDb integration.
             </p>
           </div>
 
@@ -140,16 +167,19 @@ const Releases = () => {
         </div>
 
         {featuredMovie && (
-          <div className="mb-12 overflow-hidden rounded-3xl border border-white/10 bg-white/4 p-5 backdrop-blur-xl md:p-7">
+          <div className="mb-12 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl md:p-7">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-              <div className="relative h-64 overflow-hidden rounded-3xl lg:h-80 lg:w-[45%]">
+              <div
+                onClick={() => handleViewDetails(featuredMovie)}
+                className="relative h-64 cursor-pointer overflow-hidden rounded-3xl lg:h-80 lg:w-[45%]"
+              >
                 <img
                   src={featuredMovie.image}
                   alt={featuredMovie.title}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
                 />
 
-                <div className="absolute inset-0 bg-linear-to-t from-black via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
                 <div className="absolute left-5 top-5 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-white">
                   Featured Release
@@ -161,7 +191,10 @@ const Releases = () => {
                   {featuredMovie.status}
                 </p>
 
-                <h2 className="text-3xl font-bold text-white md:text-5xl">
+                <h2
+                  onClick={() => handleViewDetails(featuredMovie)}
+                  className="cursor-pointer text-3xl font-bold text-white transition hover:text-primary md:text-5xl"
+                >
                   {featuredMovie.title}
                 </h2>
 
@@ -187,15 +220,31 @@ const Releases = () => {
                 </div>
 
                 <div className="mt-8 flex flex-wrap gap-4">
-                  <button className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary/80">
+                  <button
+                    onClick={() => handleNotify(featuredMovie)}
+                    className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary/80"
+                  >
                     <BellIcon className="h-4 w-4" />
                     Notify Me
                   </button>
 
-                  <button className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-primary hover:text-primary">
+                  <button
+                    onClick={() => handleWatchTrailer(featuredMovie)}
+                    className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-primary hover:text-primary"
+                  >
                     <PlayCircleIcon className="h-5 w-5" />
                     Watch Trailer
                   </button>
+
+                  {featuredMovie.status === "Now Released" && (
+                    <button
+                      onClick={() => handleBookTickets(featuredMovie)}
+                      className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-6 py-3 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
+                    >
+                      <TicketIcon className="h-4 w-4" />
+                      Book Tickets
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -211,16 +260,19 @@ const Releases = () => {
             {filteredReleases.map((movie) => (
               <div
                 key={movie.id}
-                className="group overflow-hidden rounded-3xl border border-white/10 bg-white/4 backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-white/[0.07]"
+                className="group overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:border-primary/50 hover:bg-white/[0.07]"
               >
-                <div className="relative h-72 overflow-hidden">
+                <div
+                  onClick={() => handleViewDetails(movie)}
+                  className="relative h-72 cursor-pointer overflow-hidden"
+                >
                   <img
                     src={movie.image}
                     alt={movie.title}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                   />
 
-                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
                   <span
                     className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold ${
@@ -231,6 +283,16 @@ const Releases = () => {
                   >
                     {movie.status}
                   </span>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWatchTrailer(movie);
+                    }}
+                    className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md transition hover:bg-primary"
+                  >
+                    <PlayCircleIcon className="h-5 w-5" />
+                  </button>
 
                   <div className="absolute bottom-4 left-4 right-4">
                     <h3 className="line-clamp-1 text-lg font-semibold text-white">
@@ -260,17 +322,28 @@ const Releases = () => {
                     </p>
                   </div>
 
-                  <button className="mt-5 w-full rounded-full bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary/80">
-                    {movie.status === "Now Released"
-                      ? "Book Tickets"
-                      : "Notify Me"}
+                  <button
+                    onClick={() => handleBookTickets(movie)}
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-white transition hover:bg-primary/80"
+                  >
+                    {movie.status === "Now Released" ? (
+                      <>
+                        <TicketIcon className="h-4 w-4" />
+                        Book Tickets
+                      </>
+                    ) : (
+                      <>
+                        <BellIcon className="h-4 w-4" />
+                        Notify Me
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="mt-10 flex min-h-62.5 items-center justify-center rounded-3xl border border-white/10 bg-white/4">
+          <div className="mt-10 flex min-h-[250px] items-center justify-center rounded-3xl border border-white/10 bg-white/[0.04]">
             <p className="text-gray-400">No releases found.</p>
           </div>
         )}

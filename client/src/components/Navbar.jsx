@@ -17,6 +17,7 @@ const Navbar = () => {
     { name: "Theaters", path: "/theater" },
     { name: "Releases", path: "/releases" },
     { name: "Favourites", path: "/favourite" },
+    ...(user?.role === "admin" ? [{ name: "Admin", path: "/admin" }] : []),
   ];
 
   const closeMenu = () => {
@@ -44,7 +45,6 @@ const Navbar = () => {
   return (
     <header className="fixed left-0 top-0 z-50 w-full px-4 py-4 md:px-10 lg:px-24">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/35 px-5 shadow-lg shadow-black/20 backdrop-blur-xl md:px-8">
-        
         {/* Logo */}
         <Link to="/" onClick={closeMenu} className="flex items-center">
           <div className="cinema-badge">
@@ -75,7 +75,6 @@ const Navbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center gap-3 md:gap-5">
-          
           {/* Search */}
           <form
             onSubmit={handleSearch}

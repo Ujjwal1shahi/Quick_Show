@@ -28,11 +28,9 @@ const Login = () => {
     }));
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    if(!formData.email || !formData.password){
-      toast.error("Please fill all fields");
+  const handleAdminLogin = async () => {
+    if (!formData.email || !formData.password) {
+      toast.error("Please enter email and password");
       return;
     }
 
@@ -49,25 +47,72 @@ const Login = () => {
 
       const data = await res.json();
 
-      if(!data.success){
-        toast.error(data.message || "Login failed");
+      if (!data.success) {
+        toast.error(data.message || "Admin login failed");
+        return;
+      }
+
+      if (data.user.role !== "admin") {
+        toast.error("You are not an admin");
         return;
       }
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      toast.success("Login Successfull");
+      toast.success("Admin Login Successful");
       navigate("/");
-
     } catch (error) {
-      console.log("Login error : ", error);
-      toast.error("Something went wrong");      
-    }
-    finally{
+      console.log("Admin Login Error : ", error);
+      toast.error("Something went wrong");
+    } finally {
       setLoading(false);
     }
   };
+
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
+  if (!formData.email || !formData.password) {
+    toast.error("Please enter email and password");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await fetch(`${backendUrl}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      toast.error(data.message || "Login failed");
+      return;
+    }
+
+     if (data.user.role === "admin") {
+      toast.error("Admin account detected. Please use Login as Admin.");
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    toast.success("Login Successful");
+    navigate("/");
+  } catch (error) {
+    console.log("Login Error : ", error);
+    toast.error("Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#09090f] text-white">
@@ -191,17 +236,17 @@ const Login = () => {
               <div className="h-px flex-1 bg-white/10" />
             </div>
 
-            {/* Google Button */}
+            {/* admin Button */}
             <button
               type="button"
-              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/3 py-3 text-sm font-medium text-gray-300 transition hover:bg-white/[0.07]"
+              onClick={handleAdminLogin}
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-primary/30 bg-primary/10 py-3 text-sm font-medium text-primary transition hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <span className="text-lg">G</span>
-              Continue with Google
+              Login as Admin
             </button>
-
             <p className="mt-7 text-center text-sm text-gray-400">
-              Don&apos;t have an account?{" "}
+              Donn't have an account?{" "}
               <Link
                 to="/signup"
                 className="font-medium text-primary hover:underline"

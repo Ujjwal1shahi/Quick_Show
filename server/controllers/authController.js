@@ -11,7 +11,7 @@ const generateToken = (userId) => {
 // Sign Up
 export const signup = async (req, res) => {
   try {
-    const { name, email, password, image } = req.body;
+    const { name, email, password, image, role } = req.body;
 
     if(!name || !email || !password){
       return res.status(400).json({
@@ -43,6 +43,7 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
       image: image || "",
+      role: role || "user",
     });
     
     const token = generateToken(user._id);
@@ -56,6 +57,7 @@ export const signup = async (req, res) => {
         name: user.name,
         email: user.email,
         image: user.image,
+        role: user.role,
       },
     });
 
@@ -110,6 +112,7 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         image: user.image,
+        role: user.role,
       },
     });
 

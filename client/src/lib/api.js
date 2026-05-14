@@ -1,21 +1,41 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const normalizeBaseUrl = (baseUrl = "") => baseUrl.replace(/\/+$/, "");
+
+const API_BASE_URLS = [
+  import.meta.env.VITE_API_URL,
+  import.meta.env.VITE_API_BASE_URL,
+  import.meta.env.VITE_BACKEND_URL,
+  "http://localhost:5000",
+]
+  .map(normalizeBaseUrl)
+  .filter(Boolean)
+  .filter((value, index, arr) => arr.indexOf(value) === index);
 
 const request = async (endpoint, options = {}) => {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+  let lastError = null;
 
-  const data = await response.json().catch(() => ({}));
+  for (const baseUrl of API_BASE_URLS) {
+    try {
+      const response = await fetch(`${baseUrl}${endpoint}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
+        ...options,
+      });
 
-  if (!response.ok || data.success === false) {
-    throw new Error(data.message || "Something went wrong");
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      return data;
+    } catch (error) {
+      lastError = error;
+    }
   }
 
-  return data;
+  throw lastError || new Error("API request failed");
 };
 
 export const getMovies = (search = "") => {
@@ -24,6 +44,8 @@ export const getMovies = (search = "") => {
 };
 
 export const getMovieDetails = (id) => request(`/api/movies/${id}`);
+
+export const getReleases = () => request("/api/releases");
 
 export const getShowDetails = (id) => request(`/api/shows/${id}`);
 
@@ -44,6 +66,15 @@ export const createBooking = (bookingData) =>
 export const markBookingPaid = (bookingId) =>
   request(`/api/bookings/${bookingId}/pay`, {
     method: "PATCH",
+  });
+
+export const searchMovies = (query) =>
+  request(`/api/admin/search-movies?query=${encodeURIComponent(query)}`);
+
+export const addShow = (showData) =>
+  request("/api/admin/add-show", {
+    method: "POST",
+    body: JSON.stringify(showData),
   });
 
 export default request;

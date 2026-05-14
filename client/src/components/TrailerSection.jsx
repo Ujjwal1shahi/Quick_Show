@@ -59,8 +59,8 @@ const TrailerSection = () => {
               >
                 <img src={trailer.image} alt="Trailer" className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-black/35" />
-                <PlayCircleIcon className="absolute left-1/2 top-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 text-white" />
-                {isActive && <span className="absolute bottom-0 left-1/2 h-1 w-24 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_16px_rgba(255,0,90,0.9)]" />}
+                <PlayCircleIcon className="absolute left-1/2 top-1/2 h-9 w-9 -translate-x-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-all cursor-pointer" />
+                {isActive && <span className="absolute bottom-0 left-1/2 h-1 w-full -translate-x-1/2 rounded-full bg-primary shadow-[0_0_30px_rgba(255,0,90,0.9)]" />}
               </button>
             );
           })}

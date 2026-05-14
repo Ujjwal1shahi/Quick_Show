@@ -16,6 +16,17 @@ const DEFAULT_MOVIE_TITLES = [
   "Dune",
 ];
 
+const RELEASE_MOVIE_TITLES = [
+  "Avatar: Fire and Ash",
+  "Avengers: Doomsday",
+  "The Batman Part II",
+  "Superman",
+  "Jurassic World Rebirth",
+  "Mission: Impossible - The Final Reckoning",
+  "Dune: Part Two",
+  "Inside Out 2",
+];
+
 const PLACEHOLDER_POSTER =
   "https://placehold.co/500x750/111827/ffffff?text=No+Poster";
 
@@ -139,6 +150,35 @@ const getMovieByTitle = async (title) => {
   return normalizeMovie(data);
 };
 
+const getReleaseStatus = (releaseDate) => {
+  const release = new Date(releaseDate);
+  if (Number.isNaN(release.getTime())) return "Upcoming";
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return release <= today ? "Now Released" : "Upcoming";
+};
+
+const normalizeRelease = (movie) => {
+  const normalizedMovie = normalizeMovie(movie);
+
+  return {
+    id: normalizedMovie._id,
+    imdbID: normalizedMovie.imdbID,
+    title: normalizedMovie.title,
+    genre: movie.Genre && movie.Genre !== "N/A" ? movie.Genre : "Drama",
+    date: movie.Released && movie.Released !== "N/A" ? movie.Released : normalizedMovie.release_date,
+    duration: movie.Runtime && movie.Runtime !== "N/A" ? movie.Runtime : `${normalizedMovie.runtime} min`,
+    rating: movie.Rated && movie.Rated !== "N/A" ? movie.Rated : "NR",
+    imdbRating: Number(normalizedMovie.vote_average || 0).toFixed(1),
+    year: movie.Year && movie.Year !== "N/A" ? movie.Year : normalizedMovie.release_date?.slice(0, 4),
+    status: getReleaseStatus(normalizedMovie.release_date),
+    image: normalizedMovie.poster_path,
+    plot: normalizedMovie.overview,
+    movie: normalizedMovie,
+  };
+};
+
 export const getMovies = async (req, res) => {
   try {
     const search = req.query.search?.trim();
@@ -182,6 +222,25 @@ export const getMovieDetails = async (req, res) => {
     res.json({ success: true, movie: normalizeMovie(data) });
   } catch (error) {
     res.status(404).json({ success: false, message: error.message });
+  }
+};
+
+export const getReleases = async (req, res) => {
+  try {
+    const releases = await Promise.all(
+      RELEASE_MOVIE_TITLES.map(async (title) => {
+        try {
+          const data = await omdbRequest({ t: title, plot: "full" });
+          return normalizeRelease(data);
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    res.json({ success: true, releases: releases.filter(Boolean) });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message, releases: [] });
   }
 };
 
