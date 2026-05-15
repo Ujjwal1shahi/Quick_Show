@@ -7,6 +7,7 @@ import {
   BellIcon,
   Loader2Icon,
   TicketIcon,
+  RefreshCwIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -15,44 +16,93 @@ import { getReleases } from "../lib/api";
 
 const filterOptions = ["All", "Upcoming", "Now Released"];
 
+const fallbackPoster =
+  "https://placehold.co/600x900/111827/ffffff?text=No+Poster";
+
 const Releases = () => {
   const navigate = useNavigate();
 
   const [releases, setReleases] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const getMovieStatus = (year) => {
+  const getMovieStatus = (movie) => {
+    const currentDate = new Date();
+
+    const releaseDate =
+      movie.Released && movie.Released !== "N/A"
+        ? new Date(movie.Released)
+        : movie.date
+        ? new Date(movie.date)
+        : null;
+
+    if (releaseDate && !isNaN(releaseDate.getTime())) {
+      return releaseDate > currentDate ? "Upcoming" : "Now Released";
+    }
+
     const currentYear = new Date().getFullYear();
-    const movieYear = Number(year);
+    const movieYear = Number(movie.Year || movie.year);
 
     if (!movieYear) return "Upcoming";
 
     return movieYear >= currentYear ? "Upcoming" : "Now Released";
   };
 
-  const fetchReleases = async () => {
+  const normalizeMovie = (movie, index) => {
+    const poster = movie.Poster || movie.poster || movie.image;
+
+    return {
+      id: movie.imdbID || movie._id || movie.id || index,
+      title: movie.Title || movie.title || "Untitled Movie",
+      year: movie.Year || movie.year || "N/A",
+      date: movie.Released || movie.released || movie.date || "Coming Soon",
+      duration: movie.Runtime || movie.runtime || movie.duration || "N/A",
+      genre: movie.Genre || movie.genre || "Movie",
+      plot: movie.Plot || movie.plot || "No plot available.",
+      imdbRating: movie.imdbRating || movie.rating || "N/A",
+      image: poster && poster !== "N/A" ? poster : fallbackPoster,
+      trailerUrl: movie.trailerUrl || movie.trailer || "",
+      status: movie.status || getMovieStatus(movie),
+    };
+  };
+
+  const fetchReleases = async (isManualRefresh = false) => {
     try {
-      setLoading(true);
+      if (isManualRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
       const data = await getReleases();
 
-      const movies = (data.releases || []).map((movie) => ({
-        ...movie,
-        status: movie.status || getMovieStatus(movie.year),
-      }));
+      const apiMovies = Array.isArray(data)
+        ? data
+        : data?.releases || data?.movies || data?.Search || [];
+
+      const movies = apiMovies.map((movie, index) =>
+        normalizeMovie(movie, index)
+      );
 
       setReleases(movies);
     } catch (error) {
       console.log("Error fetching releases:", error);
-      toast.error("Failed to load releases");
+      toast.error("Failed to load realtime movies");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
     fetchReleases();
+
+    const interval = setInterval(() => {
+      fetchReleases(true);
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleNotify = (movie) => {
@@ -145,11 +195,11 @@ const Releases = () => {
             </h1>
 
             <p className="mt-3 max-w-2xl text-sm text-gray-400 md:text-base">
-              Latest movie details fetched from your backend OMDb integration.
+              Realtime movie details fetched directly from your API.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {filterOptions.map((item) => (
               <button
                 key={item}
@@ -163,6 +213,17 @@ const Releases = () => {
                 {item}
               </button>
             ))}
+
+            <button
+              onClick={() => fetchReleases(true)}
+              disabled={refreshing}
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-medium text-gray-300 transition hover:border-primary/50 hover:text-primary disabled:opacity-60"
+            >
+              <RefreshCwIcon
+                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </button>
           </div>
         </div>
 
@@ -176,6 +237,9 @@ const Releases = () => {
                 <img
                   src={featuredMovie.image}
                   alt={featuredMovie.title}
+                  onError={(e) => {
+                    e.currentTarget.src = fallbackPoster;
+                  }}
                   className="h-full w-full object-cover transition duration-500 hover:scale-105"
                 />
 
@@ -269,6 +333,9 @@ const Releases = () => {
                   <img
                     src={movie.image}
                     alt={movie.title}
+                    onError={(e) => {
+                      e.currentTarget.src = fallbackPoster;
+                    }}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                   />
 
@@ -344,7 +411,7 @@ const Releases = () => {
           </div>
         ) : (
           <div className="mt-10 flex min-h-[250px] items-center justify-center rounded-3xl border border-white/10 bg-white/[0.04]">
-            <p className="text-gray-400">No releases found.</p>
+            <p className="text-gray-400">No realtime releases found.</p>
           </div>
         )}
       </div>
