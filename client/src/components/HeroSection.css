@@ -126,6 +126,24 @@
   justify-content: center;
 }
 
+.cinema-title-line,
+.cinema-title-accent {
+  display: block;
+}
+
+.cinema-title-accent {
+  font-style: normal;
+}
+
+.cinema-inline-animation {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cinema-poster-title-animation {
+  display: block;
+}
+
 .cinema-badge {
   display: inline-flex;
   align-items: center;
